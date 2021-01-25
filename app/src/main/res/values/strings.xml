@@ -1,0 +1,66 @@
+<resources>
+    <string name="app_name">Easy sms</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="nav_header_title">Android Studio</string>
+    <string name="nav_header_subtitle">android.studio@android.com</string>
+    <string name="nav_header_desc">Navigation header</string>
+    <string name="action_settings">Settings</string>
+
+    <string name="menu_home">Home</string>
+    <string name="menu_gallery">Gallery</string>
+    <string name="menu_slideshow">Slideshow</string>
+    <string name="sms_settings">SMS Settings</string>
+    <string name="bulk_sms">Bulk SMS</string>
+    <string name="whatsapp_send">WhatsApp Send</string>
+    <string name="update_profile">Update Profile</string>
+    <string name="logout">Logout</string>
+    <string name="home">Home</string>
+    <string name="sms_service">SMS Service</string>
+    <string name="whatsapp_service">WhatsApp Service</string>
+    <string name="unique_message_setting">Unique Message Setting</string>
+    <string name="repeat_mode">Repeat Mode</string>
+    <string name="default_sim">Default Sim</string>
+    <string name="incoming_message">Incoming message</string>
+    <string name="outgoing_message">Outgoing message</string>
+    <string name="missed_message">Missed message</string>
+    <string name="your_website_url">Your website URL</string>
+    <string name="login">Login</string>
+    <string name="register">Register</string>
+    <string name="how_we_work">How we work?</string>
+    <string name="username">Username</string>
+    <string name="password">password</string>
+    <string name="email_validation">Please enter email</string>
+    <string name="password_validation">Please enter password</string>
+    <string name="save">save</string>
+    <string name="template">Template</string>
+    <string name="thanks_for_using_the_application">Thanks for using the application</string>
+    <string name="invitation">Invitation</string>
+    <string name="share">Share</string>
+    <string name="enter_mobile_number">Enter mobile number</string>
+
+    <string-array name="english_template">
+        <item>Dear Sir Thanks For Calling…</item>
+        <item>Dear Sir Thanks For Connecting with us.Mask is important to beware of covid-19</item>
+        <item>Dear Sir I am busy now.I will reply after some time!</item>
+        <item>Dear Sir I am currently busy so I will be returning your call as soon as possible.</item>
+        <item>Dear Sir I will call you back on some times</item>
+        <item>Dear Sir I am driving and I will get in contact with you as soon as possible.</item>
+        <item>Dear Sir Nice to talk you and thanks for connecting with us</item>
+        <item>Every problem is a gift — without problems we would not grow.</item>
+        <item>Happy employees lead to happy customers, which leads to more profits.</item>
+        <item>You are connected with our business, we will help you in every way possible.</item>
+        <item>Sir our service will be available 24 hours for you.</item>
+    </string-array>
+    <string-array name="hindi_template">
+        <item>महोदय फोन करने के लिए धन्यवाद |</item>
+        <item>श्रीमान मैं अभी व्यस्त हूँ। मैं आप को बाद में जवाब दूंगा |</item>
+        <item>मैं आपको कुछ मिनटों बाद फोन कर दूंगा |</item>
+        <item>महोदय मैं गाड़ी चला रहा हूं और जितनी जल्दी हो सके मैं आपके साथ संपर्क में रहूंगा ।</item>
+        <item>आप का कॉल मेरे लिए महत्व पूर्ण है मैं आप को जल्द ही जबाब दूंगा |</item>
+        <item>हर समस्या एक उपहार है - समस्याओं के बिना हम नहीं बढ़ेंगे ।</item>
+        <item>खुश कर्मचारियों से खुश ग्राहक पैदा होते हैं, जिससे अधिक मुनाफा होता है।</item>
+        <item>आप हमारे व्यापर से जुड़े है हम आप की हर संभव सहायता करेंगे धन्यवाद |</item>
+        <item>श्रीमान हमारी सेवा आप के लिए 24 घंटे उपलब्ध रहेगी धन्यवाद |</item>
+    </string-array>
+</resources>
