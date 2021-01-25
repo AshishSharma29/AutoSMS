@@ -12,6 +12,7 @@ import com.auto_reply.util.PhonecallReceiver;
 import com.auto_reply.util.Prefs;
 import com.auto_reply.util.SimUtil;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -35,7 +36,9 @@ public class CallReceiver extends PhonecallReceiver {
             phoneNumberModel.setNumber(number);
             phoneNumberModel.setTimeMillis(start.getTime());
             phoneNumberModel.setInComingMessage(true);
-        } else if (!(new Date(phoneNumberModel.getTimeMillis()).equals(new Date()))) {
+        } else if (!(new SimpleDateFormat("dd/MM/yyyy").format(new Date(phoneNumberModel.getTimeMillis())).equals(new SimpleDateFormat("dd/MM/yyyy").format(new Date())))
+                || !phoneNumberModel.isInComingMessage()) {
+            phoneNumberModel.setInComingMessage(true);
             phoneNumberModel.setTimeMillis(start.getTime());
         } else return;
 
@@ -85,7 +88,9 @@ public class CallReceiver extends PhonecallReceiver {
             phoneNumberModel.setNumber(number);
             phoneNumberModel.setTimeMillis(start.getTime());
             phoneNumberModel.setOutGoingMessage(true);
-        } else if (!(new Date(phoneNumberModel.getTimeMillis()).equals(new Date()))) {
+        } else if (!(new SimpleDateFormat("dd/MM/yyyy").format(new Date(phoneNumberModel.getTimeMillis())).equals(new SimpleDateFormat("dd/MM/yyyy").format(new Date())))
+                || !phoneNumberModel.isOutGoingMessage()) {
+            phoneNumberModel.setOutGoingMessage(true);
             phoneNumberModel.setTimeMillis(start.getTime());
         } else return;
 
@@ -129,7 +134,9 @@ public class CallReceiver extends PhonecallReceiver {
             phoneNumberModel.setNumber(number);
             phoneNumberModel.setTimeMillis(start.getTime());
             phoneNumberModel.setOutGoingMessage(true);
-        } else if (!(new Date(phoneNumberModel.getTimeMillis()).equals(new Date()))) {
+        } else if (!(new SimpleDateFormat("dd/MM/yyyy").format(new Date(phoneNumberModel.getTimeMillis())).equals(new SimpleDateFormat("dd/MM/yyyy").format(new Date())))
+                || !phoneNumberModel.isMissedMessage()) {
+            phoneNumberModel.setMissedMessage(true);
             phoneNumberModel.setTimeMillis(start.getTime());
         } else return;
 
