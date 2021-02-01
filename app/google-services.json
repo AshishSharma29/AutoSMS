@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "245162905880",
+    "project_id": "autoreply-4982f",
+    "storage_bucket": "autoreply-4982f.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:245162905880:android:608a7373ac6853cdcece6d",
+        "android_client_info": {
+          "package_name": "com.auto_reply"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "245162905880-32j2rfa225o4mb3ms37o9snkj8tt75n9.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDjf3QFdAFkpHrqIONu_NdqZvQRH5xMg8s"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "245162905880-32j2rfa225o4mb3ms37o9snkj8tt75n9.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

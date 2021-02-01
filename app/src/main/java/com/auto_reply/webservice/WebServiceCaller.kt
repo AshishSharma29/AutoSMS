@@ -7,6 +7,7 @@ import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import okhttp3.MediaType
 import okhttp3.MultipartBody
+import okhttp3.MediaType.Companion.toMediaType
 import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -144,78 +145,7 @@ object WebServiceCaller {
         )
     }
 
-    fun uploadSignatureMultipart(
-        jsonObject: JsonObject,
-        apiName: String,
-        apiCallbacks: ApiCallbacks?,
-        imagePath: File
-    ) {
-        Log.e(apiName, jsonObject.toString())
-
-        val apiInterface = ApiClient.client.create(ApiInterface::class.java)
-
-
-        val imagePart: RequestBody =
-            RequestBody.create(MediaType.parse("multipart/form-data"), File(imagePath.path))
-        val AssessmentDocId =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("AssessmentDocId").asString
-            )
-        val ProjectId =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("ProjectId").asString
-            )
-        val DocTypeId =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("DocTypeId").asString
-            )
-        val DrawingId =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("DrawingId").asString
-            )
-        val RefId =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("RefId").asString
-            )
-        val SignatureIdentifier =
-            RequestBody.create(
-                MediaType.parse("multipart/form-data"),
-                jsonObject.get("SignatureIdentifier").asString
-            )
-
-        val call = apiInterface.apiCallMultipart(
-            AutoReplyApplication.getInstance().getAuthHeaders().header!!,
-            apiName,
-            MultipartBody.Part.createFormData(
-                "PostPhoto",
-                imagePath.name.split(".")[0] + ".png",
-                imagePart
-            ), AssessmentDocId, DocTypeId, DrawingId, ProjectId, RefId, SignatureIdentifier
-        )
-
-        call.enqueue(object : Callback<JsonObject> {
-            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                if (response.body() != null && isSuccess(response.body()!!)) {
-                    Log.e("$apiName: Response", response.body()!!.toString())
-                    apiCallbacks?.onSuccess(response.body()!!, apiName)
-                } else {
-                    Log.e("$apiName: Response", response.body()!!.toString())
-                    apiCallbacks?.onError(response.body().toString(), apiName)
-                }
-            }
-
-            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                t.message?.let { apiCallbacks!!.onError(it, apiName) }
-            }
-        }
-        )
-    }
-
+   
     /**
      * method to check response success
      *

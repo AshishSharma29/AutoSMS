@@ -97,7 +97,7 @@ class MainActivity : BaseActivity() {
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
         when (item.itemId) {
             R.id.action_whatsapp -> {
-                findNavController(R.id.nav_host_fragment).navigate(R.id.nav_whatsapp)
+                findNavController(R.id.nav_host_fragment).navigate(R.id.nav_WhatsAppMessageFragment)
             }
             android.R.id.home -> {
                 drawerLayout.openDrawer(GravityCompat.START)
@@ -204,7 +204,7 @@ class MainActivity : BaseActivity() {
                 Manifest.permission.FOREGROUND_SERVICE
             ) != PackageManager.PERMISSION_GRANTED
         ) {
-            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.P) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
                 permissions.add(Manifest.permission.FOREGROUND_SERVICE)
             }
         }
@@ -214,6 +214,20 @@ class MainActivity : BaseActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.READ_CONTACTS)
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.WRITE_CONTACTS
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.WRITE_CONTACTS)
         }
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -231,6 +245,15 @@ class MainActivity : BaseActivity() {
         }
         if (ContextCompat.checkSelfPermission(
                 this,
+                Manifest.permission.FOREGROUND_SERVICE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                permissions.add(Manifest.permission.FOREGROUND_SERVICE)
+            }
+        }
+        if (ContextCompat.checkSelfPermission(
+                this,
                 Manifest.permission.READ_CALL_LOG
             ) != PackageManager.PERMISSION_GRANTED
         ) {
@@ -244,7 +267,10 @@ class MainActivity : BaseActivity() {
                     Manifest.permission.SEND_SMS,
                     Manifest.permission.PROCESS_OUTGOING_CALLS,
                     Manifest.permission.ACCESS_COARSE_LOCATION,
-                    Manifest.permission.READ_PHONE_STATE
+                    Manifest.permission.READ_PHONE_STATE,
+                    Manifest.permission.READ_CONTACTS,
+                    Manifest.permission.WRITE_CONTACTS,
+                    Manifest.permission.FOREGROUND_SERVICE
                 ),
                 101
             )

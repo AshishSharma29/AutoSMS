@@ -1,6 +1,8 @@
 package com.auto_reply.base
 
+import android.R.id
 import android.content.Context
+import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
@@ -9,8 +11,12 @@ import android.telephony.TelephonyManager
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.FileProvider
+import com.auto_reply.BuildConfig
 import com.auto_reply.R
+import java.io.File
 import java.lang.reflect.Method
 
 
@@ -148,16 +154,32 @@ open class BaseActivity : AppCompatActivity() {
         return result
     }
 
-    fun sendSmsToWhatsApp(number: String) {
-        //So you can get the edittext value
-        //So you can get the edittext value
+    fun sendSmsToWhatsApp(number: String, file: File?, message: String) {
+        var toNumber = "+91 $number"
+        toNumber = toNumber.replace("+", "").replace(" ", "")
+
+        val sendIntent = Intent("android.intent.action.MAIN")
+        sendIntent.putExtra(
+            Intent.EXTRA_STREAM,
+            FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file!!)
+        )
+        sendIntent.putExtra("jid", "$toNumber@s.whatsapp.net")
+        sendIntent.putExtra(Intent.EXTRA_TEXT, message)
+        sendIntent.action = Intent.ACTION_SEND
+        sendIntent.setPackage("com.whatsapp")
+        sendIntent.type = "image/png"
+        sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        startActivity(sendIntent)
+
+    }
+
+    fun sendDirectSmsToWhatsApp(number: String) {
         val mobileNumber: String = number
         val installed = appInstalledOrNot("com.whatsapp")
         if (installed) {
             val intent = Intent(Intent.ACTION_VIEW)
             intent.data =
                 Uri.parse("http://api.whatsapp.com/send?phone=+91$mobileNumber")
-            /*&text=$message*/
             startActivity(intent)
         } else {
             Toast.makeText(
@@ -166,6 +188,15 @@ open class BaseActivity : AppCompatActivity() {
                 Toast.LENGTH_SHORT
             ).show()
         }
+    }
+
+    fun showWarningDialog(context: Context, message: String) {
+        AlertDialog.Builder(context)
+            .setMessage(message)
+            .setNegativeButton("cancel",
+                DialogInterface.OnClickListener { dialog, which -> dialog.dismiss() })
+            .setCancelable(true)
+            .create().show()
     }
 
     //Create method appInstalledOrNot

@@ -13,9 +13,9 @@
 
     <fragment
         android:id="@+id/nav_gallery"
-        android:name="com.auto_reply.ui.gallery.GalleryFragment"
-        android:label="@string/menu_gallery"
-        tools:layout="@layout/fragment_gallery" />
+        android:name="com.auto_reply.ui.bulkSms.BulkSmsFragment"
+        android:label="Bulk SMS"
+        tools:layout="@layout/fragment_bulk_sms" />
 
     <fragment
         android:id="@+id/nav_slideshow"
@@ -38,4 +38,9 @@
         android:name="com.auto_reply.ui.whatsapp_page.WhatsAppFragment"
         android:label="WhatsApp"
         tools:layout="@layout/fragment_whatsapp" />
+    <fragment
+        android:id="@+id/nav_WhatsAppMessageFragment"
+        android:name="com.auto_reply.ui.whatsapp_page.WhatsAppMessageFragment"
+        android:label="WhatsApp"
+        tools:layout="@layout/fragment_whatsapp_message" />
 </navigation>

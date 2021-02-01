@@ -44,7 +44,7 @@ class HomeFragment : BaseFragment() {
         mBinding.tvRegistrationNumber.text =
             "Registration number " + loginResponseModel.responsePacket.registrationNumber
         mBinding.cdBulkSms.setOnClickListener {
-            mActivity.showToast("under development")
+            Navigation.findNavController(it).navigate(R.id.nav_gallery)
         }
         mBinding.cdUpdateProfile.setOnClickListener {
             val intent = Intent(mActivity, WebViewActivity::class.java)

@@ -38,6 +38,8 @@
     <string name="invitation">Invitation</string>
     <string name="share">Share</string>
     <string name="enter_mobile_number">Enter mobile number</string>
+    <string name="enter_message">Enter message</string>
+    <string name="search">Search</string>
 
     <string-array name="english_template">
         <item>Dear Sir Thanks For Calling…</item>
