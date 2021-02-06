@@ -1,8 +1,13 @@
 package com.auto_reply.calling;
 
 import android.content.Context;
+import android.os.Build;
 import android.telephony.SmsManager;
+import android.telephony.SubscriptionInfo;
+import android.telephony.SubscriptionManager;
 import android.widget.Toast;
+
+import androidx.annotation.RequiresApi;
 
 import com.auto_reply.model.CheckLicenceResponseModel;
 import com.auto_reply.model.LoginResponseModel;
@@ -15,6 +20,7 @@ import com.auto_reply.util.SimUtil;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 public class CallReceiver extends PhonecallReceiver {
 
@@ -176,13 +182,22 @@ public class CallReceiver extends PhonecallReceiver {
     }
 
 
+    @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     public static void sendSMS(String phoneNo, String msg, Context ctx, int simID) {
         if (msg.trim().isEmpty())
             return;
-
-        SimUtil.sendSMS(ctx, simID, phoneNo, null, msg, null, null);
+        final ArrayList<Integer> simCardList = new ArrayList<>();
+        SubscriptionManager subscriptionManager = SubscriptionManager.from(ctx);
+        final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+                .getActiveSubscriptionInfoList();
+        for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
+            int subscriptionId = subscriptionInfo.getSubscriptionId();
+            simCardList.add(subscriptionId);
+        }
+//        SimUtil.sendSMS(ctx, simID, phoneNo, null, msg, null, null);
         try {
-            SmsManager smsManager = SmsManager.getDefault();
+            int smsToSendFrom = simCardList.get(simID);
+            SmsManager smsManager = SmsManager.getSmsManagerForSubscriptionId(smsToSendFrom);
             ArrayList<String> parts = smsManager.divideMessage(msg);
             smsManager.sendMultipartTextMessage(phoneNo, null, parts, null, null);
 //            smsManager.sendTextMessage(phoneNo, null, msg, null, null);

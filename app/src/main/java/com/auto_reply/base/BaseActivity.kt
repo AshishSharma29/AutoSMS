@@ -1,11 +1,12 @@
 package com.auto_reply.base
 
-import android.R.id
+import android.app.Activity
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.telephony.TelephonyManager
 import android.view.View
@@ -16,8 +17,10 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.FileProvider
 import com.auto_reply.BuildConfig
 import com.auto_reply.R
+import okhttp3.Request
 import java.io.File
 import java.lang.reflect.Method
+import java.net.URLEncoder
 
 
 open class BaseActivity : AppCompatActivity() {
@@ -171,6 +174,53 @@ open class BaseActivity : AppCompatActivity() {
         sendIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         startActivity(sendIntent)
 
+    }
+
+    fun sendBackgroundWhatsappMessage(number: String, file: File?, message: String) {
+        val uri: Uri
+        if (file == null) {
+            try {
+                val packageManager = packageManager
+                val intent = Intent("android.intent.action.VIEW")
+                intent.setPackage(
+                    "com.whatsapp"
+                )
+                intent.data = Uri.parse(
+                    "https://api.whatsapp.com/send?phone=+91" + number
+                        .toString() + "&text=" + URLEncoder.encode(
+                        "ashish"
+                    )
+                )
+                if (intent.resolveActivity(packageManager) != null) {
+                    startActivity(intent)
+                }
+            } catch (unused: java.lang.Exception) {
+                unused.printStackTrace()
+            }
+        } else {
+            uri = if (Build.VERSION.SDK_INT >= 24) {
+                FileProvider.getUriForFile(this, BuildConfig.APPLICATION_ID + ".provider", file)
+            } else {
+                Uri.fromFile(file)
+            }
+            try {
+                val replace2: String =
+                    number.replace("+", "").replace(" ", "")
+                val intent2 = Intent("android.intent.action.MAIN")
+                intent2.putExtra("android.intent.extra.STREAM", uri)
+                intent2.putExtra("jid", "$replace2@s.whatsapp.net")
+                intent2.putExtra("android.intent.extra.TEXT", message)
+                intent2.action = "android.intent.action.SEND"
+//                intent2.addFlags(268435456)
+                intent2.setPackage(
+                    "com.whatsapp"
+                )
+                intent2.type = "image/png"
+                startActivity(intent2)
+            } catch (unused2: java.lang.Exception) {
+                unused2.printStackTrace()
+            }
+        }
     }
 
     fun sendDirectSmsToWhatsApp(number: String) {

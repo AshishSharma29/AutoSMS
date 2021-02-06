@@ -30,6 +30,7 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.auto_reply.base.BaseActivity
+import com.auto_reply.calling.CallReceiver
 import com.auto_reply.model.CheckLicenceResponseModel
 import com.auto_reply.model.LoginResponseModel
 import com.auto_reply.util.ForegroundService
@@ -51,6 +52,10 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        val (_, _, responsePacket) = Prefs.getObjectFromPref<LoginResponseModel>(
+            this,
+            LoginResponseModel::class.java.name
+        )
         checkLicence()
         checkPermissions()
         getSimName()
