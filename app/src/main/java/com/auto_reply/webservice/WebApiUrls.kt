@@ -6,5 +6,6 @@ package com.auto_reply.webservice
 
 object WebApiUrls {
     const val LOGIN = "UserAuth/LoginUserAuth"
-    const val CHECK_LICENCE= "UserAuth/CheckLicance"
+    const val CHECK_LICENCE = "UserAuth/CheckLicance"
+    const val ERROR_LOG = "UserAuth/ErrorLogs"
 }

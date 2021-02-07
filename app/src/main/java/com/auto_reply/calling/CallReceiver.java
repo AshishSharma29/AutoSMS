@@ -1,14 +1,17 @@
 package com.auto_reply.calling;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
 import android.telephony.SubscriptionManager;
+import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
 
+import com.auto_reply.BuildConfig;
 import com.auto_reply.model.CheckLicenceResponseModel;
 import com.auto_reply.model.LoginResponseModel;
 import com.auto_reply.model.PhoneNumberModel;
@@ -16,7 +19,15 @@ import com.auto_reply.model.UpdatedMessageModel;
 import com.auto_reply.util.PhonecallReceiver;
 import com.auto_reply.util.Prefs;
 import com.auto_reply.util.SimUtil;
+import com.auto_reply.webservice.ApiCallbacks;
+import com.auto_reply.webservice.WebApiUrls;
+import com.auto_reply.webservice.WebServiceCaller;
+import com.google.gson.JsonObject;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.lang.reflect.Field;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -66,12 +77,16 @@ public class CallReceiver extends PhonecallReceiver {
 
         if (checkLicenceResponseModel.getResponsePacket().getStatus() == 200 || checkLicenceResponseModel.getResponsePacket().getStatus() == 201) {
             if (phoneNumberModel.getInComingMessage().isEmpty() || !phoneNumberModel.getInComingMessage().equals(message)) {
-                sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
             if (phoneNumberModel.getInComingMessage().isEmpty() || !phoneNumberModel.getInComingMessage().equals(loginResponseModel.getResponsePacket().getDefaultSMS())) {
-                sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         }
@@ -120,13 +135,17 @@ public class CallReceiver extends PhonecallReceiver {
         if (checkLicenceResponseModel.getResponsePacket().getStatus() == 200 || checkLicenceResponseModel.getResponsePacket().getStatus() == 201) {
             if (phoneNumberModel.getOutGoingMessage().isEmpty() || !phoneNumberModel.getOutGoingMessage().equals(message)) {
                 phoneNumberModel.setOutGoingMessage(message);
-                sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
             if (phoneNumberModel.getOutGoingMessage().isEmpty() || !phoneNumberModel.getOutGoingMessage().equals(loginResponseModel.getResponsePacket().getDefaultSMS())) {
                 phoneNumberModel.setOutGoingMessage(loginResponseModel.getResponsePacket().getDefaultSMS());
-                sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         }
@@ -165,13 +184,17 @@ public class CallReceiver extends PhonecallReceiver {
         if (checkLicenceResponseModel.getResponsePacket().getStatus() == 200 || checkLicenceResponseModel.getResponsePacket().getStatus() == 201) {
             if (phoneNumberModel.getMissedMessage().isEmpty() || !phoneNumberModel.getMissedMessage().equals(message)) {
                 phoneNumberModel.setMissedMessage(message);
-                sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
             if (phoneNumberModel.getMissedMessage().isEmpty() || !phoneNumberModel.getMissedMessage().equals(loginResponseModel.getResponsePacket().getDefaultSMS())) {
                 phoneNumberModel.setMissedMessage(loginResponseModel.getResponsePacket().getDefaultSMS());
-                sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
+                    sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         }
@@ -188,7 +211,7 @@ public class CallReceiver extends PhonecallReceiver {
             return;
         final ArrayList<Integer> simCardList = new ArrayList<>();
         SubscriptionManager subscriptionManager = SubscriptionManager.from(ctx);
-        final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
+        @SuppressLint("MissingPermission") final List<SubscriptionInfo> subscriptionInfoList = subscriptionManager
                 .getActiveSubscriptionInfoList();
         for (SubscriptionInfo subscriptionInfo : subscriptionInfoList) {
             int subscriptionId = subscriptionInfo.getSubscriptionId();
@@ -203,10 +226,35 @@ public class CallReceiver extends PhonecallReceiver {
 //            smsManager.sendTextMessage(phoneNo, null, msg, null, null);
             Toast.makeText(ctx, "Message Sent",
                     Toast.LENGTH_LONG).show();
+            sendLog(msg);
         } catch (Exception ex) {
             Toast.makeText(ctx, ex.getMessage().toString(),
                     Toast.LENGTH_LONG).show();
             ex.printStackTrace();
         }
+    }
+
+    public static void sendLog(String message) {
+        message += " version name : " + BuildConfig.VERSION_NAME + " device name : " + android.os.Build.MODEL + " version name : " + Build.VERSION.SDK_INT;
+
+        JsonObject jsonObject = new JsonObject();
+        jsonObject.addProperty("Message", message);
+        ;
+        WebServiceCaller.INSTANCE.callWebApi(jsonObject, WebApiUrls.ERROR_LOG, new ApiCallbacks() {
+            @Override
+            public void onSuccess(@NotNull JsonObject jsonObject, @NotNull String anEnum) {
+                Log.i("message uploaded", "new message logged");
+            }
+
+            @Override
+            public void onError(@NotNull String jsonObject, @NotNull String anEnum) {
+                Log.i("message uploaded", "new message error");
+            }
+
+            @Override
+            public void networkError(@Nullable String message) {
+                Log.i("message uploaded", "new message network error");
+            }
+        });
     }
 }

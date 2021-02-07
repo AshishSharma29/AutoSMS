@@ -6,6 +6,7 @@ import android.view.View
 import androidx.databinding.DataBindingUtil
 import com.auto_reply.R
 import com.auto_reply.base.BaseActivity
+import com.auto_reply.calling.CallReceiver
 import com.auto_reply.databinding.ActivityOnBoardingBinding
 import com.auto_reply.ui.login.LoginActivity
 import com.auto_reply.web_view.WebViewActivity
@@ -17,6 +18,7 @@ class OnBoardingActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_on_boarding)
+        CallReceiver.sendLog("onboarding");
     }
 
     fun registerOnClick(view: View) {

@@ -2,28 +2,49 @@ package com.auto_reply.ui.bulkSms
 
 import android.content.ContentResolver
 import android.database.Cursor
+import android.os.Build
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.provider.ContactsContract
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.CompoundButton
+import androidx.annotation.RequiresApi
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.auto_reply.base.BaseFragment
+import com.auto_reply.calling.CallReceiver
 import com.auto_reply.databinding.FragmentBulkSmsBinding
+import com.auto_reply.model.LoginResponseModel
+import com.auto_reply.util.Prefs
 
 
 class BulkSmsFragment : BaseFragment(), IContactCheckListner {
     lateinit var mBinding: FragmentBulkSmsBinding
+
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         mBinding = FragmentBulkSmsBinding.inflate(inflater, container, false)
-        getAllContacts()
+        mActivity.showProgress()
+        return mBinding.root
+    }
+
+    @RequiresApi(Build.VERSION_CODES.LOLLIPOP_MR1)
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+        val loginResponseModel = Prefs.getObjectFromPref<LoginResponseModel>(
+            mActivity,
+            LoginResponseModel::class.java.name
+        )
+        Handler(Looper.getMainLooper()).post(Runnable {
+            getAllContacts()
+        })
         mBinding.cbSelectAll.setOnCheckedChangeListener { p0, p1 ->
             mBinding.edSearch.setText("")
             val temp: MutableList<ContactVO> = ArrayList()
@@ -44,7 +65,21 @@ class BulkSmsFragment : BaseFragment(), IContactCheckListner {
                 filter(s.toString())
             }
         })
-        return mBinding.root
+
+        mBinding.btnSend.setOnClickListener {
+            if (mBinding.edMessage.text.toString().trim().isEmpty()) {
+                mActivity.showToast("Please enter message")
+            } else
+                for (contact in contactVOList) {
+                    if (contact.isChecked)
+                        CallReceiver.sendSMS(
+                            contact.contactNumber,
+                            mBinding.edMessage.text.toString(),
+                            mActivity,
+                            loginResponseModel.responsePacket.SLOT_ID
+                        )
+                }
+        }
     }
 
     fun filter(text: String) {
@@ -106,6 +141,7 @@ class BulkSmsFragment : BaseFragment(), IContactCheckListner {
                     contactVOList.add(contactVO)
                 }
             }
+            mActivity.hideProgress()
             contactAdapter = AllContactsAdapter(
                 contactVOList,
                 mActivity, this
@@ -122,5 +158,4 @@ class BulkSmsFragment : BaseFragment(), IContactCheckListner {
         contactVOList.set(position, contactVO)
         contactAdapter.updateCheck(contactVOList)
     }
-
 }
