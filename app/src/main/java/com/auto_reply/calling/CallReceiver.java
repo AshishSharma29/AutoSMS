@@ -228,6 +228,7 @@ public class CallReceiver extends PhonecallReceiver {
                     Toast.LENGTH_LONG).show();
             sendLog(msg);
         } catch (Exception ex) {
+            sendLog("error log "+msg);
             Toast.makeText(ctx, ex.getMessage().toString(),
                     Toast.LENGTH_LONG).show();
             ex.printStackTrace();
