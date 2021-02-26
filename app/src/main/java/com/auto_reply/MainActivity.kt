@@ -6,11 +6,13 @@ import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.DialogInterface
 import android.content.Intent
+import android.content.pm.ApplicationInfo
 import android.content.pm.PackageManager
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.os.IBinder
+import android.os.PowerManager
 import android.telephony.SubscriptionInfo
 import android.telephony.SubscriptionManager
 import android.telephony.TelephonyManager
@@ -30,7 +32,6 @@ import androidx.navigation.ui.navigateUp
 import androidx.navigation.ui.setupActionBarWithNavController
 import androidx.navigation.ui.setupWithNavController
 import com.auto_reply.base.BaseActivity
-import com.auto_reply.calling.CallReceiver
 import com.auto_reply.model.CheckLicenceResponseModel
 import com.auto_reply.model.LoginResponseModel
 import com.auto_reply.util.ForegroundService
@@ -41,11 +42,13 @@ import com.auto_reply.webservice.WebServiceCaller
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.judemanutd.autostarter.AutoStartPermissionHelper
 import java.lang.reflect.InvocationTargetException
 import java.lang.reflect.Method
 
 
 class MainActivity : BaseActivity() {
+    private var wakeLock: PowerManager.WakeLock? = null
     lateinit var drawerLayout: DrawerLayout
     private lateinit var appBarConfiguration: AppBarConfiguration
     lateinit var navController: NavController
@@ -59,6 +62,13 @@ class MainActivity : BaseActivity() {
         checkLicence()
         checkPermissions()
         getSimName()
+
+       // showToast("Auto start permission is  "+ AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this).)
+        if(!AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(this))
+        {
+        //AutoStartPermissionHelper.getInstance().getAutoStartPermission(this);
+        }
+
 //        CallReceiver.sendSMS(
 //            "121",
 //            "new message new message new message new message new message new message new message new message new message new message new message new message new message",
@@ -67,7 +77,7 @@ class MainActivity : BaseActivity() {
 //        )
         val toolbar: Toolbar = findViewById(R.id.toolbar)
         setSupportActionBar(toolbar)
-
+        startService();
         drawerLayout = findViewById(R.id.drawer_layout)
         val navView: NavigationView = findViewById(R.id.nav_view)
         navController = findNavController(R.id.nav_host_fragment)
@@ -92,11 +102,21 @@ class MainActivity : BaseActivity() {
         val serviceIntent = Intent(this, ForegroundService::class.java)
         serviceIntent.putExtra("inputExtra", "using call states in background")
         ContextCompat.startForegroundService(this, serviceIntent)
+
+        wakeLock =
+            (getSystemService(Context.POWER_SERVICE) as PowerManager).run {
+                newWakeLock(PowerManager.PARTIAL_WAKE_LOCK, "EndlessService::lock").apply {
+                    acquire(6000000)
+                }
+            }
+
+
     }
 
     fun stopService() {
         val serviceIntent = Intent(this, ForegroundService::class.java)
-        stopService(serviceIntent)
+       // stopService(serviceIntent)
+        ContextCompat.startForegroundService(this, serviceIntent)
     }
 
     override fun onOptionsItemSelected(item: MenuItem): Boolean {
@@ -203,6 +223,7 @@ class MainActivity : BaseActivity() {
             ) != PackageManager.PERMISSION_GRANTED
         ) {
             permissions.add(Manifest.permission.READ_PHONE_STATE)
+            setautostart()
         }
         if (ContextCompat.checkSelfPermission(
                 this,
@@ -213,13 +234,13 @@ class MainActivity : BaseActivity() {
                 permissions.add(Manifest.permission.FOREGROUND_SERVICE)
             }
         }
-        if (ContextCompat.checkSelfPermission(
-                this,
-                Manifest.permission.ACCESS_COARSE_LOCATION
-            ) != PackageManager.PERMISSION_GRANTED
-        ) {
-            permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
-        }
+    //*    if (ContextCompat.checkSelfPermission(
+    //            this,
+     //           Manifest.permission.ACCESS_COARSE_LOCATION
+     //       ) != PackageManager.PERMISSION_GRANTED
+     //   ) {
+    //        permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION)
+     //   }
         if (ContextCompat.checkSelfPermission(
                 this,
                 Manifest.permission.READ_CONTACTS
@@ -280,6 +301,12 @@ class MainActivity : BaseActivity() {
                 101
             )
         }
+    }
+
+
+
+    fun setautostart() {
+            AutoStartPermissionHelper.getInstance().getAutoStartPermission(this);
     }
 
     override fun onRequestPermissionsResult(

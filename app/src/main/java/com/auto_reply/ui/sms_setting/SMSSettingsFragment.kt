@@ -81,7 +81,7 @@ class SMSSettingsFragment : BaseFragment() {
                 LoginResponseModel::class.java.name
             )
             if (p1) (mActivity as MainActivity).startService()
-            else (mActivity as MainActivity).stopService()
+            else (mActivity as MainActivity).startService()
         }
         mBinding.switchRepeatMode.setOnCheckedChangeListener { _, p1 ->
             loginResponseModel?.responsePacket?.REPEAT_MODE = p1

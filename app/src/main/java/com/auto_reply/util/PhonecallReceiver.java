@@ -5,7 +5,12 @@ import java.util.Date;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Build;
 import android.telephony.TelephonyManager;
+
+import com.judemanutd.autostarter.AutoStartPermissionHelper;
+
+import static com.auto_reply.calling.CallReceiver.sendLog;
 
 public abstract class PhonecallReceiver extends BroadcastReceiver {
 
@@ -19,6 +24,14 @@ public abstract class PhonecallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+         try{context.startService(new Intent(context, ForegroundService.class));}
+         catch (Exception en){
+             sendLog(" onReceive  Exception   "+ en.getMessage()+" SDK Version "+ Build.VERSION.SDK_INT);
+         }
+
+        if(!AutoStartPermissionHelper.getInstance().isAutoStartPermissionAvailable(context)) {
+        //    AutoStartPermissionHelper.getInstance().getAutoStartPermission(context);
+        }
 
         //We listen to two intents.  The new outgoing call only tells us of an outgoing call.  We use it to get the number.
         if (intent.getAction().equals("android.intent.action.NEW_OUTGOING_CALL")) {

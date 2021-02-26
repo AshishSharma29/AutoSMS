@@ -14,7 +14,7 @@ android {
         minSdkVersion 21
         targetSdkVersion 30
         versionCode 2
-        versionName "1.1"
+        versionName "2.1"
 
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
@@ -64,4 +64,5 @@ dependencies {
     implementation 'com.google.firebase:firebase-crashlytics'
     implementation 'com.github.dhaval2404:imagepicker:1.8'
     implementation 'com.github.florent37:inline-activity-result-kotlin:1.0.4'
+    implementation 'com.github.judemanutd:autostarter:1.0.8'
 }

@@ -1,7 +1,12 @@
 package com.auto_reply.ui.login
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
+import android.os.Build
 import android.os.Bundle
+import androidx.core.app.ActivityCompat
+import androidx.core.content.ContextCompat
 import androidx.databinding.DataBindingUtil
 import com.auto_reply.MainActivity
 import com.auto_reply.R
@@ -15,6 +20,7 @@ import com.auto_reply.webservice.WebApiUrls
 import com.auto_reply.webservice.WebServiceCaller
 import com.google.gson.Gson
 import com.google.gson.JsonObject
+import com.judemanutd.autostarter.AutoStartPermissionHelper
 
 class LoginActivity : BaseActivity() {
 
@@ -22,6 +28,8 @@ class LoginActivity : BaseActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+
+     //   checkPermissions();
         mBinding = DataBindingUtil.setContentView(this, R.layout.activity_login)
         mBinding.btnLogin.setOnClickListener {
             if (mBinding.nameEditText.text?.trim()?.isEmpty()!!) {
@@ -76,5 +84,30 @@ class LoginActivity : BaseActivity() {
 
             }
         }
+    }
+
+    fun checkPermissions() {
+        var permissions: ArrayList<String> = ArrayList()
+        if (ContextCompat.checkSelfPermission(
+                this,
+                Manifest.permission.READ_PHONE_STATE
+            ) != PackageManager.PERMISSION_GRANTED
+        ) {
+            permissions.add(Manifest.permission.READ_PHONE_STATE)
+            setautostart()
+        }
+        if (permissions.isNotEmpty()) {
+            ActivityCompat.requestPermissions(
+                this,
+                arrayOf(
+                    Manifest.permission.READ_PHONE_STATE
+                ),
+                101
+            )
+        }
+    }
+
+    fun setautostart() {
+        AutoStartPermissionHelper.getInstance().getAutoStartPermission(this);
     }
 }

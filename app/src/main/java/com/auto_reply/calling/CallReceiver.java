@@ -1,7 +1,9 @@
 package com.auto_reply.calling;
 
 import android.annotation.SuppressLint;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
 import android.telephony.SmsManager;
 import android.telephony.SubscriptionInfo;
@@ -10,12 +12,14 @@ import android.util.Log;
 import android.widget.Toast;
 
 import androidx.annotation.RequiresApi;
+import androidx.core.content.ContextCompat;
 
 import com.auto_reply.BuildConfig;
 import com.auto_reply.model.CheckLicenceResponseModel;
 import com.auto_reply.model.LoginResponseModel;
 import com.auto_reply.model.PhoneNumberModel;
 import com.auto_reply.model.UpdatedMessageModel;
+import com.auto_reply.util.ForegroundService;
 import com.auto_reply.util.PhonecallReceiver;
 import com.auto_reply.util.Prefs;
 import com.auto_reply.util.SimUtil;
@@ -34,6 +38,8 @@ import java.util.Date;
 import java.util.List;
 
 public class CallReceiver extends PhonecallReceiver {
+
+
 
     @Override
     protected void onIncomingCallReceived(Context ctx, String number, Date start) {
@@ -80,12 +86,20 @@ public class CallReceiver extends PhonecallReceiver {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
                 }
+                else{
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
             if (phoneNumberModel.getInComingMessage().isEmpty() || !phoneNumberModel.getInComingMessage().equals(loginResponseModel.getResponsePacket().getDefaultSMS())) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
+                else {
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
                 }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
@@ -138,6 +152,10 @@ public class CallReceiver extends PhonecallReceiver {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
                 }
+                else {
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
@@ -145,6 +163,10 @@ public class CallReceiver extends PhonecallReceiver {
                 phoneNumberModel.setOutGoingMessage(loginResponseModel.getResponsePacket().getDefaultSMS());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
+                else {
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
                 }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
@@ -187,6 +209,10 @@ public class CallReceiver extends PhonecallReceiver {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
                 }
+                else {
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
+                }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
         } else {
@@ -194,6 +220,10 @@ public class CallReceiver extends PhonecallReceiver {
                 phoneNumberModel.setMissedMessage(loginResponseModel.getResponsePacket().getDefaultSMS());
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP_MR1) {
                     sendSMS(number, loginResponseModel.getResponsePacket().getDefaultSMS(), ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                }
+                else {
+                    sendSMSall(number, message, ctx, loginResponseModel.getResponsePacket().getSLOT_ID());
+                    sendLog("Build Version : than SMS not Sent "+Build.VERSION.SDK_INT);
                 }
                 Prefs.putObjectIntoPref(ctx, phoneNumberModel, number);
             }
@@ -204,7 +234,27 @@ public class CallReceiver extends PhonecallReceiver {
         Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
     }
 
+    public  void sendSMSall(String phoneNo, String msg, Context ctx, int simID) {
 
+//        SimUtil.sendSMS(ctx, simID, phoneNo, null, msg, null, null);
+        try {
+             String SENT = "SMS_SENT";
+             String DELIVERED = "SMS_DELIVERED";
+            PendingIntent sentPI = PendingIntent.getBroadcast(ctx, 0, new Intent( SENT), 0);
+            PendingIntent deliveredPI = PendingIntent.getBroadcast(ctx, 0,
+                    new Intent(DELIVERED), 0);
+          //  ArrayList<String> parts = SmsManager.divideMessage(msg);
+            SmsManager.getDefault().sendTextMessage(phoneNo, null, msg, sentPI, null);
+            Toast.makeText(ctx, "Message Sent",
+                    Toast.LENGTH_LONG).show();
+            sendLog(msg);
+        } catch (Exception ex) {
+            sendLog("error log "+msg);
+            Toast.makeText(ctx, ex.getMessage().toString(),
+                    Toast.LENGTH_LONG).show();
+            ex.printStackTrace();
+        }
+    }
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP_MR1)
     public static void sendSMS(String phoneNo, String msg, Context ctx, int simID) {
         if (msg.trim().isEmpty())
@@ -236,7 +286,9 @@ public class CallReceiver extends PhonecallReceiver {
     }
 
     public static void sendLog(String message) {
-        message += " version name : " + BuildConfig.VERSION_NAME + " device name : " + android.os.Build.MODEL + " version name : " + Build.VERSION.SDK_INT;
+
+
+        message += " version name : " + BuildConfig.VERSION_NAME + " device name : " + android.os.Build.MODEL + " version name : " + Build.VERSION.SDK_INT+" Login User Name " ;
 
         JsonObject jsonObject = new JsonObject();
         jsonObject.addProperty("Message", message);
